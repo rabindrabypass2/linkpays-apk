@@ -85,24 +85,17 @@ public class MainActivity extends AppCompatActivity {
     // Automation & Anti-Fingerprint Script for LinkPays & BhootBypass
     private static final String SCRIPT_LINKPAYS = 
         "(function(){\n" +
-        "    if (window.__linkpays_active) return;\n" +
+        "    if (window.__bhoot_injected) return;\n" +
+        "    window.__bhoot_injected = true;\n" +
         "\n" +
-        "    var curHost = (location.hostname || '').toLowerCase();\n" +
-        "    var curPath = (location.pathname || '').toLowerCase();\n" +
-        "    if (curHost.indexOf('cloudflare.com') !== -1 || curPath.indexOf('/cdn-cgi/') !== -1) {\n" +
-        "        return;\n" +
-        "    }\n" +
-        "\n" +
-        "    window.__linkpays_active = true;\n" +
-        "\n" +
-        "    // 1. Anti-Fingerprint: Hardware Concurrency, Memory & Touch\n" +
+        "    // Anti-Fingerprint: Hardware Concurrency, Memory & Touch\n" +
         "    try {\n" +
         "        Object.defineProperty(navigator, 'hardwareConcurrency', { get: function() { return 8; } });\n" +
         "        Object.defineProperty(navigator, 'deviceMemory', { get: function() { return 8; } });\n" +
         "        Object.defineProperty(navigator, 'maxTouchPoints', { get: function() { return 5; } });\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    // 2. Anti-Fingerprint: WebGL Vendor & Renderer Spoofing (Adreno 750 / Qualcomm)\n" +
+        "    // Anti-Fingerprint: WebGL Vendor & Renderer Spoofing\n" +
         "    try {\n" +
         "        var origGetParam = WebGLRenderingContext.prototype.getParameter;\n" +
         "        WebGLRenderingContext.prototype.getParameter = function(param) {\n" +
@@ -120,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         "        }\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    // 3. Anti-Fingerprint: Canvas Noise Injection\n" +
+        "    // Anti-Fingerprint: Canvas Noise Injection\n" +
         "    try {\n" +
         "        var origToDataURL = HTMLCanvasElement.prototype.toDataURL;\n" +
         "        HTMLCanvasElement.prototype.toDataURL = function() {\n" +
@@ -138,12 +131,6 @@ public class MainActivity extends AppCompatActivity {
         "        };\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    function notify(status) {\n" +
-        "        if (window.AndroidBridge && typeof window.AndroidBridge.onStatusUpdate === 'function') {\n" +
-        "            window.AndroidBridge.onStatusUpdate(status);\n" +
-        "        }\n" +
-        "    }\n" +
-        "\n" +
         "    function checkDestination() {\n" +
         "        var curHref = (location.href || '').toLowerCase();\n" +
         "        if (curHref.indexOf('mediafire.com') !== -1 || document.querySelector('a[href*=\"mediafire.com\"]')) {\n" +
@@ -155,108 +142,17 @@ public class MainActivity extends AppCompatActivity {
         "        return false;\n" +
         "    }\n" +
         "\n" +
-        "    // 4. Inject dj's Cloudflare Worker script\n" +
-        "    var workerInjected = false;\n" +
-        "    function injectWorkerScript() {\n" +
-        "        if (workerInjected) return;\n" +
-        "        try {\n" +
-        "            var s = document.createElement('script');\n" +
-        "            s.src = 'https://bhootbypass.redbhoot505.workers.dev/?host=' + encodeURIComponent(location.hostname);\n" +
-        "            (document.head || document.body || document.documentElement).appendChild(s);\n" +
-        "            workerInjected = true;\n" +
-        "            notify('Worker Injected: ' + location.hostname);\n" +
-        "        } catch(e){}\n" +
-        "    }\n" +
-        "\n" +
-        "    // 5. Native Fast Automation for LinkPays & Safelink/Arlink pages\n" +
-        "    function runLinkPaysAutomation() {\n" +
-        "        if (checkDestination()) return;\n" +
-        "        injectWorkerScript();\n" +
-        "\n" +
-        "        try {\n" +
-        "            // Step 1: linkpays.in gateway (#goBtn or proceed())\n" +
-        "            if (curHost.indexOf('linkpays.in') !== -1) {\n" +
-        "                var goBtn = document.getElementById('goBtn');\n" +
-        "                if (goBtn) {\n" +
-        "                    if (goBtn.style.display !== 'none' || (typeof verified !== 'undefined' && verified)) {\n" +
-        "                        notify('Clicking Continue (goBtn)...');\n" +
-        "                        if (typeof proceed === 'function') { proceed(); } else { goBtn.click(); }\n" +
-        "                        return;\n" +
-        "                    }\n" +
-        "                }\n" +
-        "            }\n" +
-        "\n" +
-        "            // Step 2: Auto submit safelink / tp form\n" +
-        "            var f = document.getElementById('tp98') || document.forms['tp1'] || document.querySelector('form[name^=\"tp\"],form[id^=\"tp\"],form[action*=\"safelink\"],form[method=\"post\"]:not(.blogsy-search-form):not(#commentform)');\n" +
-        "            if (f) {\n" +
-        "                if (f.querySelector('.cf-turnstile')) {\n" +
-        "                    var tokenInput = f.querySelector('[name=\"cf-turnstile-response\"]');\n" +
-        "                    if (!tokenInput || !tokenInput.value) {\n" +
-        "                        notify('Cloudflare Turnstile: Tap Box');\n" +
-        "                        return;\n" +
-        "                    }\n" +
-        "                }\n" +
-        "                notify('Submitting Safelink Form...');\n" +
-        "                f.submit();\n" +
-        "                return;\n" +
-        "            }\n" +
-        "\n" +
-        "            // Step 3: wpsafelink redirection\n" +
-        "            if (typeof wpsafelink !== 'undefined' && wpsafelink) {\n" +
-        "                notify('Redirecting to Safelink...');\n" +
-        "                location.href = wpsafelink;\n" +
-        "                return;\n" +
-        "            }\n" +
-        "\n" +
-        "            // Step 4: Continue buttons / safelink links\n" +
-        "            var b = document.querySelector('#tp-continue,a.tp-btn,button.tp-btn:not(#tp-verify):not(#btnx),[onclick*=\"wpsafelink\"],[onclick*=\"submit\"],[href*=\"?safelink\"]');\n" +
-        "            if (b && b.href && !b.href.endsWith('#')) {\n" +
-        "                notify('Navigating Safelink...');\n" +
-        "                location.href = b.href;\n" +
-        "                return;\n" +
-        "            }\n" +
-        "            if (b) {\n" +
-        "                b.disabled = false;\n" +
-        "                b.style.display = 'inline-block';\n" +
-        "                notify('Clicking Continue (tp-btn)...');\n" +
-        "                b.click();\n" +
-        "                return;\n" +
-        "            }\n" +
-        "\n" +
-        "            // Step 5: Verify button\n" +
-        "            var v = document.getElementById('tp-verify');\n" +
-        "            if (v) {\n" +
-        "                notify('Clicking tp-verify...');\n" +
-        "                v.click();\n" +
-        "            }\n" +
-        "\n" +
-        "            // Step 6: Final btnx button\n" +
-        "            var x = document.getElementById('btnx');\n" +
-        "            if (x) {\n" +
-        "                x.disabled = false;\n" +
-        "                x.style.display = 'inline-block';\n" +
-        "                notify('Clicking Final btnx...');\n" +
-        "                if (window.AndroidBridge && typeof window.AndroidBridge.onFinalStepTriggered === 'function') {\n" +
-        "                    window.AndroidBridge.onFinalStepTriggered();\n" +
-        "                }\n" +
-        "                x.click();\n" +
-        "            }\n" +
-        "        } catch(err) {}\n" +
-        "    }\n" +
-        "\n" +
-        "    runLinkPaysAutomation();\n" +
-        "    setInterval(runLinkPaysAutomation, 300);\n" +
-        "    setInterval(checkDestination, 500);\n" +
-        "\n" +
+        "    // dj's exact script untouched\n" +
         "    try {\n" +
-        "        var observer = new MutationObserver(function() {\n" +
-        "            runLinkPaysAutomation();\n" +
-        "            checkDestination();\n" +
-        "        });\n" +
-        "        if (document.body) {\n" +
-        "            observer.observe(document.body, { childList: true, subtree: true, characterData: true });\n" +
+        "        var s = document.createElement('script');\n" +
+        "        s.src = 'https://bhootbypass.redbhoot505.workers.dev/?host=' + encodeURIComponent(location.hostname);\n" +
+        "        (document.body || document.head || document.documentElement).appendChild(s);\n" +
+        "        if (window.AndroidBridge && typeof window.AndroidBridge.onStatusUpdate === 'function') {\n" +
+        "            window.AndroidBridge.onStatusUpdate('Worker Injected: ' + location.hostname);\n" +
         "        }\n" +
         "    } catch(e){}\n" +
+        "\n" +
+        "    setInterval(checkDestination, 500);\n" +
         "})();";
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -892,3 +788,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
