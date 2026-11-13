@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         "        window.location.replace = function(u) {\n" +
         "            if (!u) return;\n" +
         "            var s = (u + '').toLowerCase();\n" +
-        "            if (s.indexOf('linkpays.in') !== -1 || s.indexOf('roadtaxcalculatorr.my') !== -1 || s.indexOf('cloudflare') !== -1 || s.indexOf('mediafire.com') !== -1) {\n" +
+        "            if (s.indexOf('linkpays.in') !== -1 || s.indexOf('rank1st.in') !== -1 || s.indexOf('roadtaxcalculatorr.my') !== -1 || s.indexOf('cloudflare') !== -1 || s.indexOf('mediafire.com') !== -1) {\n" +
         "                _origReplace(u);\n" +
         "            }\n" +
         "        };\n" +
@@ -82,20 +82,19 @@ public class MainActivity extends AppCompatActivity {
         "    } catch(e){}\n" +
         "})();";
 
-    // Automation & Anti-Fingerprint Script for LinkPays & BhootBypass
-    private static final String SCRIPT_LINKPAYS = 
+    // dj's Full Automated Chain-Skip Script
+    private static final String SCRIPT_CHAIN_SKIP =
         "(function(){\n" +
-        "    if (window.__bhoot_injected) return;\n" +
-        "    window.__bhoot_injected = true;\n" +
+        "    if (window.__chainskip_running) return;\n" +
+        "    window.__chainskip_running = true;\n" +
         "\n" +
-        "    // Anti-Fingerprint: Hardware Concurrency, Memory & Touch\n" +
+        "    // 1. Anti-Fingerprint\n" +
         "    try {\n" +
         "        Object.defineProperty(navigator, 'hardwareConcurrency', { get: function() { return 8; } });\n" +
         "        Object.defineProperty(navigator, 'deviceMemory', { get: function() { return 8; } });\n" +
         "        Object.defineProperty(navigator, 'maxTouchPoints', { get: function() { return 5; } });\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    // Anti-Fingerprint: WebGL Vendor & Renderer Spoofing\n" +
         "    try {\n" +
         "        var origGetParam = WebGLRenderingContext.prototype.getParameter;\n" +
         "        WebGLRenderingContext.prototype.getParameter = function(param) {\n" +
@@ -113,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
         "        }\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    // Anti-Fingerprint: Canvas Noise Injection\n" +
         "    try {\n" +
         "        var origToDataURL = HTMLCanvasElement.prototype.toDataURL;\n" +
         "        HTMLCanvasElement.prototype.toDataURL = function() {\n" +
@@ -131,28 +129,253 @@ public class MainActivity extends AppCompatActivity {
         "        };\n" +
         "    } catch(e){}\n" +
         "\n" +
-        "    function checkDestination() {\n" +
-        "        var curHref = (location.href || '').toLowerCase();\n" +
-        "        if (curHref.indexOf('mediafire.com') !== -1 || document.querySelector('a[href*=\"mediafire.com\"]')) {\n" +
-        "            if (window.AndroidBridge && typeof window.AndroidBridge.onDestinationDetected === 'function') {\n" +
-        "                window.AndroidBridge.onDestinationDetected(location.href);\n" +
-        "                return true;\n" +
+        "    // 2. Chain-Skip Engine\n" +
+        "    var D = document, L = location;\n" +
+        "    var MAX_HOPS = 12;\n" +
+        "    var FETCH_MS = 15000;\n" +
+        "    var FALLBACK_TOKEN = 'hMB0hZ';\n" +
+        "    var FILE_HOST = /(?:mediafire\\.com|mega\\.nz|mega\\.co\\.nz|drive\\.google\\.com|dropbox\\.com|apkpure\\.com|uptodown\\.com|apkmirror\\.com|pixeldrain\\.com|gofile\\.io|1drv\\.ms|terabox\\.com|zippyshare\\.com)/i;\n" +
+        "    var GATEWAY = /secure\\s*gateway/i;\n" +
+        "    var badge = null;\n" +
+        "\n" +
+        "    function say(msg) {\n" +
+        "        try {\n" +
+        "            if (window.AndroidBridge && typeof window.AndroidBridge.onStatusUpdate === 'function') {\n" +
+        "                window.AndroidBridge.onStatusUpdate(msg);\n" +
         "            }\n" +
-        "        }\n" +
-        "        return false;\n" +
+        "            if (!badge || !badge.isConnected) {\n" +
+        "                badge = D.createElement('div');\n" +
+        "                badge.setAttribute('style', 'position:fixed;z-index:2147483647;left:14px;bottom:14px;max-width:min(520px,calc(100vw - 28px));padding:13px 16px;border-radius:10px;background:#0b1220;color:#7dd3fc;font:700 13px/1.45 system-ui,Segoe UI,sans-serif;box-shadow:0 12px 34px rgba(0,0,0,.55)');\n" +
+        "                (D.body || D.documentElement).appendChild(badge);\n" +
+        "            }\n" +
+        "            badge.textContent = '';\n" +
+        "            var line = D.createElement('div');\n" +
+        "            line.textContent = 'chain-skip - ' + msg;\n" +
+        "            badge.appendChild(line);\n" +
+        "        } catch (e) {}\n" +
         "    }\n" +
         "\n" +
-        "    // dj's exact script untouched\n" +
-        "    try {\n" +
-        "        var s = document.createElement('script');\n" +
-        "        s.src = 'https://bhootbypass.redbhoot505.workers.dev/?host=' + encodeURIComponent(location.hostname);\n" +
-        "        (document.body || document.head || document.documentElement).appendChild(s);\n" +
-        "        if (window.AndroidBridge && typeof window.AndroidBridge.onStatusUpdate === 'function') {\n" +
-        "            window.AndroidBridge.onStatusUpdate('Worker Injected: ' + location.hostname);\n" +
+        "    function panel(msg, dest) {\n" +
+        "        say(msg);\n" +
+        "        if (dest && window.AndroidBridge && typeof window.AndroidBridge.onDestinationDetected === 'function') {\n" +
+        "            window.AndroidBridge.onDestinationDetected(dest);\n" +
         "        }\n" +
-        "    } catch(e){}\n" +
+        "        if (dest) {\n" +
+        "            say('Auto-Opening: ' + dest);\n" +
+        "            setTimeout(function() { L.href = dest; }, 600);\n" +
+        "        }\n" +
+        "    }\n" +
         "\n" +
-        "    setInterval(checkDestination, 500);\n" +
+        "    function abs(u, base) {\n" +
+        "        try { return new URL(String(u).replace(/\\\\\\//g, '/').replace(/&amp;/g, '&').trim(), base || L.href).href; } catch (e) { return ''; }\n" +
+        "    }\n" +
+        "    function originOf(u) { try { return new URL(u).origin; } catch (e) { return ''; } }\n" +
+        "    function hostOf(u) { try { return new URL(u).host; } catch (e) { return String(u || '').slice(0, 48); } }\n" +
+        "    function flat(el) { return ((el && el.textContent) || '').replace(/\\s+/g, ' ').trim(); }\n" +
+        "\n" +
+        "    function token() {\n" +
+        "        var m = L.search.match(/[?&]verify=([A-Za-z0-9]+)/i);\n" +
+        "        if (m) return m[1];\n" +
+        "        var inp = D.querySelector('input[name=\"newwpsafelink\"],input[name=\"link3\"],input[name=\"clickarlink\"]');\n" +
+        "        if (inp && inp.value) return inp.value;\n" +
+        "        var html = D.documentElement ? D.documentElement.innerHTML : '';\n" +
+        "        m = html.match(/[?&]verify=([A-Za-z0-9]{5,16})/i);\n" +
+        "        if (m) return m[1];\n" +
+        "        return FALLBACK_TOKEN;\n" +
+        "    }\n" +
+        "\n" +
+        "    function formHop(form, base) {\n" +
+        "        var body = null;\n" +
+        "        try { body = new FormData(form); } catch (e) { body = null; }\n" +
+        "        return {\n" +
+        "            url: abs(form.getAttribute('action') || base, base),\n" +
+        "            method: String(form.getAttribute('method') || 'get').toUpperCase(),\n" +
+        "            body: body,\n" +
+        "            kind: 'form'\n" +
+        "        };\n" +
+        "    }\n" +
+        "\n" +
+        "    function hopOf(doc, base) {\n" +
+        "        var i, el;\n" +
+        "        var fields = doc.querySelectorAll('input[name=\"newwpsafelink\"],input[name=\"link3\"],input[name=\"clickarlink\"],input[name=\"tp98\"]');\n" +
+        "        for (i = 0; i < fields.length; i++) {\n" +
+        "            var form = fields[i].form || (fields[i].closest && fields[i].closest('form'));\n" +
+        "            if (form) return formHop(form, base);\n" +
+        "        }\n" +
+        "        el = doc.getElementById('tp-snp2');\n" +
+        "        if (el) {\n" +
+        "            var wrap = el.closest && el.closest('a[href]');\n" +
+        "            if (wrap) return { url: abs(wrap.getAttribute('href'), base), method: 'GET', body: null, kind: 'snp2-anchor' };\n" +
+        "            var own = el.closest && el.closest('form');\n" +
+        "            if (own) return formHop(own, base);\n" +
+        "            if (el.tagName === 'A' && el.getAttribute('href')) {\n" +
+        "                return { url: abs(el.getAttribute('href'), base), method: 'GET', body: null, kind: 'snp2-self' };\n" +
+        "            }\n" +
+        "        }\n" +
+        "        var anchors = doc.querySelectorAll('a[href]');\n" +
+        "        for (i = 0; i < anchors.length; i++) {\n" +
+        "            if (/^continue\\s+\\d+\\s*\\/\\s*\\d+$/i.test(flat(anchors[i]))) {\n" +
+        "                return { url: abs(anchors[i].getAttribute('href'), base), method: 'GET', body: null, kind: 'continue' };\n" +
+        "            }\n" +
+        "        }\n" +
+        "        var metas = doc.querySelectorAll('meta[http-equiv]');\n" +
+        "        for (i = 0; i < metas.length; i++) {\n" +
+        "            if (String(metas[i].getAttribute('http-equiv')).toLowerCase() !== 'refresh') continue;\n" +
+        "            var mm = String(metas[i].getAttribute('content') || '').match(/url\\s*=\\s*['\"]?([^'\";]+)/i);\n" +
+        "            if (mm) return { url: abs(mm[1], base), method: 'GET', body: null, kind: 'meta' };\n" +
+        "        }\n" +
+        "        return null;\n" +
+        "    }\n" +
+        "\n" +
+        "    function destination(doc) {\n" +
+        "        var html = doc.documentElement ? doc.documentElement.outerHTML : '';\n" +
+        "        var src = html.replace(/\\\\\\//g, '/');\n" +
+        "        var m = src.match(/location\\s*\\.\\s*(?:replace|assign)\\s*\\(\\s*['\"]([^'\"]+)['\"]/i) ||\n" +
+        "                src.match(/location\\s*\\.\\s*href\\s*=\\s*['\"]([^'\"]+)['\"]/i) ||\n" +
+        "                src.match(/window\\s*\\.\\s*open\\s*\\(\\s*['\"]([^'\"]+)['\"]/i);\n" +
+        "        if (m && /^https?:\\/\\//i.test(m[1])) return m[1];\n" +
+        "        var re = /https?:\\/\\/[^\\s\"'<>\\]+/gi, g;\n" +
+        "        while ((g = re.exec(src))) {\n" +
+        "            if (FILE_HOST.test(g[0])) return g[0];\n" +
+        "        }\n" +
+        "        return '';\n" +
+        "    }\n" +
+        "\n" +
+        "    function load(hop) {\n" +
+        "        var ctl = typeof AbortController === 'function' ? new AbortController() : null;\n" +
+        "        var timer = ctl ? setTimeout(function () { ctl.abort(); }, FETCH_MS) : 0;\n" +
+        "        var init = { method: hop.method, credentials: 'include', redirect: 'follow', cache: 'no-store' };\n" +
+        "        if (ctl) init.signal = ctl.signal;\n" +
+        "        if (hop.method === 'POST' && hop.body) init.body = hop.body;\n" +
+        "        return fetch(hop.url, init).then(function (r) {\n" +
+        "            clearTimeout(timer);\n" +
+        "            return r.text().then(function (t) {\n" +
+        "                return { doc: new DOMParser().parseFromString(t, 'text/html'), url: r.url || hop.url, html: t };\n" +
+        "            });\n" +
+        "        }, function (e) {\n" +
+        "            clearTimeout(timer);\n" +
+        "            throw e;\n" +
+        "        });\n" +
+        "    }\n" +
+        "\n" +
+        "    function cross(hop) {\n" +
+        "        if (hop.method === 'POST' && hop.body) {\n" +
+        "            say('crossing to ' + hostOf(hop.url) + ' (form)');\n" +
+        "            var f = D.createElement('form');\n" +
+        "            f.method = 'POST';\n" +
+        "            f.action = hop.url;\n" +
+        "            f.style.display = 'none';\n" +
+        "            hop.body.forEach(function (v, k) {\n" +
+        "                var i = D.createElement('input');\n" +
+        "                i.type = 'hidden';\n" +
+        "                i.name = k;\n" +
+        "                i.value = v;\n" +
+        "                f.appendChild(i);\n" +
+        "            });\n" +
+        "            (D.body || D.documentElement).appendChild(f);\n" +
+        "            f.submit();\n" +
+        "            return;\n" +
+        "        }\n" +
+        "        say('crossing to ' + hostOf(hop.url) + '...');\n" +
+        "        try { L.replace(hop.url); } catch (e) {\n" +
+        "            try { L.href = hop.url; } catch (e2) {}\n" +
+        "        }\n" +
+        "    }\n" +
+        "\n" +
+        "    var rawSetTimeout = window.setTimeout;\n" +
+        "    var rawSetInterval = window.setInterval;\n" +
+        "    var rawClearTimeout = window.clearTimeout;\n" +
+        "    var rawClearInterval = window.clearInterval;\n" +
+        "    var keep = {};\n" +
+        "\n" +
+        "    function sweep(limit) {\n" +
+        "        for (var i = 1; i <= limit; i++) {\n" +
+        "            if (keep[i]) continue;\n" +
+        "            try { rawClearTimeout(i); } catch (e) {}\n" +
+        "            try { rawClearInterval(i); } catch (e) {}\n" +
+        "        }\n" +
+        "    }\n" +
+        "\n" +
+        "    function hold(dest) {\n" +
+        "        sweep(20000);\n" +
+        "        try {\n" +
+        "            window.setTimeout = function () { return 0; };\n" +
+        "            window.setInterval = function () { return 0; };\n" +
+        "        } catch (e) {}\n" +
+        "        var guard = rawSetInterval(function () { sweep(4000); }, 150);\n" +
+        "        var stopper = rawSetTimeout(function () { rawClearInterval(guard); }, 8000);\n" +
+        "        keep[guard] = 1;\n" +
+        "        keep[stopper] = 1;\n" +
+        "        try {\n" +
+        "            var marks = D.querySelectorAll('b, strong, p, h2, h3, span');\n" +
+        "            for (var i = 0; i < marks.length; i++) {\n" +
+        "                if (marks[i].children.length) continue;\n" +
+        "                if (/redirecting/i.test(marks[i].textContent || '')) {\n" +
+        "                    marks[i].textContent = 'Held - Opening Destination...';\n" +
+        "                }\n" +
+        "            }\n" +
+        "        } catch (e) {}\n" +
+        "        panel('held on Get Link page - opening destination', dest);\n" +
+        "    }\n" +
+        "\n" +
+        "    function linkpays(cur) {\n" +
+        "        var dest = destination(cur.doc);\n" +
+        "        if (!dest) {\n" +
+        "            if (GATEWAY.test(cur.html)) {\n" +
+        "                var t = token();\n" +
+        "                say('Auto-Opening rank1st chain (verify=' + t + ')...');\n" +
+        "                L.replace('https://rank1st.in/?verify=' + encodeURIComponent(t));\n" +
+        "                return;\n" +
+        "            }\n" +
+        "            return say('on linkpays page, searching...');\n" +
+        "        }\n" +
+        "        hold(dest);\n" +
+        "    }\n" +
+        "\n" +
+        "    async function walk() {\n" +
+        "        var cur = { doc: D, url: L.href, html: D.documentElement ? D.documentElement.outerHTML : '' };\n" +
+        "        var seen = {};\n" +
+        "        var depth = 0;\n" +
+        "        var lastPrint = '';\n" +
+        "        for (;;) {\n" +
+        "            if (/(^|\\.)linkpays\\.in$/i.test(hostOf(cur.url))) return linkpays(cur);\n" +
+        "            if (FILE_HOST.test(hostOf(cur.url))) {\n" +
+        "                if (window.AndroidBridge && typeof window.AndroidBridge.onDestinationDetected === 'function') {\n" +
+        "                    window.AndroidBridge.onDestinationDetected(cur.url);\n" +
+        "                }\n" +
+        "                return say('Destination Reached: ' + hostOf(cur.url));\n" +
+        "            }\n" +
+        "            var hop = hopOf(cur.doc, cur.url);\n" +
+        "            if (!hop) {\n" +
+        "                var direct = destination(cur.doc);\n" +
+        "                if (direct) return panel('Direct Destination', direct);\n" +
+        "                return say('no gate on ' + hostOf(cur.url));\n" +
+        "            }\n" +
+        "            var key = hop.method + ' ' + hop.url;\n" +
+        "            seen[key] = (seen[key] || 0) + 1;\n" +
+        "            if (seen[key] > 3) return say('loop: ' + hostOf(hop.url) + ' repeats');\n" +
+        "            depth += 1;\n" +
+        "            if (depth > MAX_HOPS) return say('stopped after max hops');\n" +
+        "            if (originOf(hop.url) !== originOf(L.href)) return cross(hop);\n" +
+        "            say('hop ' + depth + ' - ' + hostOf(hop.url) + ' (' + hop.kind + ')');\n" +
+        "            var page;\n" +
+        "            try {\n" +
+        "                page = await load(hop);\n" +
+        "            } catch (e) {\n" +
+        "                return cross(hop);\n" +
+        "            }\n" +
+        "            var print = page.html.length + ':' + (page.doc.title || '');\n" +
+        "            if (print === lastPrint) return cross(hop);\n" +
+        "            lastPrint = print;\n" +
+        "            cur = page;\n" +
+        "        }\n" +
+        "    }\n" +
+        "\n" +
+        "    try {\n" +
+        "        walk();\n" +
+        "    } catch (e) {\n" +
+        "        say('stopped: ' + (e && e.message ? e.message : 'error'));\n" +
+        "    }\n" +
         "})();";
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -160,7 +383,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDestinationTriggering = false;
     private boolean isResetting = false;
     private boolean isHandlingError = false;
-    private boolean isFinalStepTriggered = false;
     private String currentIp = "...";
     private String previousIp = "";
 
@@ -191,14 +413,6 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void onDestinationDetected(String url) {
             runOnUiThread(() -> checkAndHandleDestination(url != null ? url : "https://www.mediafire.com"));
-        }
-
-        @JavascriptInterface
-        public void onFinalStepTriggered() {
-            runOnUiThread(() -> {
-                isFinalStepTriggered = true;
-                armWatchdog();
-            });
         }
 
         @JavascriptInterface
@@ -242,6 +456,8 @@ public class MainActivity extends AppCompatActivity {
         settings.setLoadWithOverviewMode(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
 
         if (WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)) {
             WebSettingsCompat.setRequestedWithHeaderOriginAllowList(settings, Collections.emptySet());
@@ -271,7 +487,7 @@ public class MainActivity extends AppCompatActivity {
                 if (newProgress >= 15 && curUrl != null && !curUrl.equals("about:blank")) {
                     if (!curUrl.contains("/cdn-cgi/") && !curUrl.contains("challenges.cloudflare.com")) {
                         view.evaluateJavascript(SCRIPT_EARLY_SHIELD, null);
-                        view.evaluateJavascript(SCRIPT_LINKPAYS, null);
+                        view.evaluateJavascript(SCRIPT_CHAIN_SKIP, null);
                     }
                 }
             }
@@ -317,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
                 if (url != null && !url.equals("about:blank")) {
                     if (url.contains("/cdn-cgi/") || url.contains("challenges.cloudflare.com")) {
                         tvStatus.setTextColor(Color.parseColor("#FFA500"));
-                        tvStatus.setText("Cloudflare Challenge: Tap Box");
+                        tvStatus.setText("Cloudflare Challenge");
                         armWatchdog();
                         return;
                     }
@@ -326,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     view.evaluateJavascript(SCRIPT_EARLY_SHIELD, null);
-                    view.evaluateJavascript(SCRIPT_LINKPAYS, null);
+                    view.evaluateJavascript(SCRIPT_CHAIN_SKIP, null);
                 }
             }
 
@@ -346,20 +562,20 @@ public class MainActivity extends AppCompatActivity {
 
                 if (url.contains("/cdn-cgi/") || url.contains("challenges.cloudflare.com")) {
                     tvStatus.setTextColor(Color.parseColor("#FFA500"));
-                    tvStatus.setText("Cloudflare Challenge: Tap Box");
+                    tvStatus.setText("Cloudflare Challenge");
                     return;
                 }
 
                 if (checkAndHandleDestination(url)) return;
 
                 view.evaluateJavascript(SCRIPT_EARLY_SHIELD, null);
-                view.evaluateJavascript(SCRIPT_LINKPAYS, null);
+                view.evaluateJavascript(SCRIPT_CHAIN_SKIP, null);
                 armWatchdog();
             }
 
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                if (failingUrl != null && (failingUrl.equals(TARGET_URL) || failingUrl.contains("linkpays.in") || failingUrl.contains("roadtaxcalculatorr.my"))) {
+                if (failingUrl != null && (failingUrl.equals(TARGET_URL) || failingUrl.contains("linkpays.in") || failingUrl.contains("rank1st.in"))) {
                     handleConnectionError();
                 }
             }
@@ -368,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
                     String failingUrl = request.getUrl().toString();
-                    if (failingUrl.equals(TARGET_URL) || failingUrl.contains("linkpays.in") || failingUrl.contains("roadtaxcalculatorr.my")) {
+                    if (failingUrl.equals(TARGET_URL) || failingUrl.contains("linkpays.in") || failingUrl.contains("rank1st.in")) {
                         handleConnectionError();
                     }
                 }
@@ -416,10 +632,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isKnownRogueAdUrl(String url) {
         if (url == null) return false;
         String lower = url.toLowerCase();
-        if (lower.contains("linkpays.in") || lower.contains("roadtaxcalculatorr.my") ||
-            lower.contains("redbhoot505.workers.dev") ||
+        if (lower.contains("linkpays.in") || lower.contains("rank1st.in") ||
+            lower.contains("roadtaxcalculatorr.my") ||
             lower.contains("cloudflare.com") || lower.contains("/cdn-cgi/") ||
-            lower.contains("mediafire.com") || lower.contains("google.")) {
+            lower.contains("mediafire.com") || lower.contains("mega.nz") ||
+            lower.contains("drive.google.com") || lower.contains("google.")) {
             return false;
         }
         return lower.contains("omg10.com") ||
@@ -441,7 +658,6 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean handleUrl(WebView view, String url) {
         if (url == null) return false;
-        String lower = url.toLowerCase();
 
         if (checkAndHandleDestination(url)) {
             return true;
@@ -470,12 +686,6 @@ public class MainActivity extends AppCompatActivity {
                 view.loadUrl(scheme + "://" + raw);
                 return true;
             } catch (Exception ignored) {}
-        }
-
-        // If final step was clicked, external navigation is destination!
-        if (isFinalStepTriggered && !lower.contains("linkpays.in") && !lower.contains("roadtaxcalculatorr.my")) {
-            checkAndHandleDestination(url);
-            return false;
         }
 
         if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -511,10 +721,10 @@ public class MainActivity extends AppCompatActivity {
     private synchronized boolean checkAndHandleDestination(String url) {
         if (url == null) return false;
         String lower = url.toLowerCase();
-        boolean isDest = lower.contains("mediafire.com") || lower.contains("mega.nz") || lower.contains("drive.google.com");
-        if (!isDest && isFinalStepTriggered && !lower.contains("linkpays.in") && !lower.contains("roadtaxcalculatorr.my") && !lower.contains("cloudflare.com")) {
-            isDest = true;
-        }
+        boolean isDest = lower.contains("mediafire.com") || lower.contains("mega.nz") ||
+                         lower.contains("drive.google.com") || lower.contains("dropbox.com") ||
+                         lower.contains("apkpure.com") || lower.contains("pixeldrain.com") ||
+                         lower.contains("gofile.io") || lower.contains("terabox.com");
         if (!isDest) return false;
 
         if (isRotating || isDestinationTriggering || isResetting) {
@@ -530,7 +740,6 @@ public class MainActivity extends AppCompatActivity {
 
             mainHandler.postDelayed(() -> {
                 isDestinationTriggering = false;
-                isFinalStepTriggered = false;
                 wipeSession();
                 startAirplaneReset();
             }, 5000);
@@ -581,7 +790,6 @@ public class MainActivity extends AppCompatActivity {
         isDestinationTriggering = false;
         isResetting = false;
         isHandlingError = false;
-        isFinalStepTriggered = false;
         disarmWatchdog();
 
         mainHandler.post(() -> {
@@ -690,7 +898,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshIpAndLoad(boolean reloadWeb) {
-        isFinalStepTriggered = false;
         wipeSession();
         armWatchdog();
 
@@ -788,4 +995,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
